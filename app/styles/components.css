@@ -1,0 +1,80 @@
+/* Components */
+
+/* Cards */
+
+.cards {
+  list-style: none;
+}
+
+.cards .card {
+  display: inline-block;
+}
+
+
+/* Card */
+
+.card {
+  border: 1px solid;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.card__head {
+  text-align: center;
+  padding: 10px;
+}
+
+.card__body {
+  border-top: 1px solid;
+  padding: 10px;
+  text-align: center;
+}
+
+.card__subtitle {
+  color: gray;
+}
+
+
+
+
+
+/* Counter */
+
+.counter {
+  font-size: 60px;
+}
+
+
+
+
+
+/* Primary toolbar */
+
+.primary-toolbar {
+}
+
+.primary-toolbar__item {
+  display: inline-block;
+  line-height: 80px;
+  padding: 0 10px;
+}
+
+.primary-toolbar__logo {
+  display: inline-block;
+  font-weight: bold;
+  font-size: 32px;
+  vertical-align: bottom;
+  padding-bottom: 22px;
+  padding-right: 20px;
+}
+
+
+
+
+
+/* Primary content */
+
+.primary-content {
+  position: relative;
+  top: 50px;
+}

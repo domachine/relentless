@@ -1,0 +1,88 @@
+/* Utilities */
+
+.container {
+  width: 1240px;
+  margin: auto;
+}
+
+
+.primary-color {
+  color: #403227 !important;
+}
+
+
+.secondary-color {
+  color: #F37260 !important;
+}
+
+
+.success-color {
+  color: #44C39D !important;
+}
+
+
+.inverse-color {
+  color: #FCFBFA !important;
+}
+
+a.inverse-color:hover {
+  color: #403227 !important;
+}
+
+
+.inverse-background-color {
+  background-color: #FCFBFA !important;
+}
+
+
+.primary-background-color {
+  background-color: #4BAFC9 !important;
+}
+
+
+.primary-border-color {
+  border-color: #403227 !important;
+}
+
+
+.primary-font {
+  font-family: Raleway !important;
+}
+
+
+.float-left {
+  float: left !important;
+}
+
+
+.row:after {
+  display: block;
+  content: "";
+  clear: left;
+}
+
+
+.one-half {
+  width: 50% !important;
+}
+
+
+.one-quarter {
+  width: 25% !important;
+}
+
+
+.push-one-quarter {
+  margin-left: 25% !important;
+}
+
+
+.push-one-half {
+  margin-left: 50% !important;
+}
+
+
+.padded {
+  padding: 8px !important;
+  box-sizing: border-box !important;
+}

@@ -4,6 +4,7 @@ var ReactDOM = require('react-dom');
 
 router.addRoute('/dashboard', require('routes/dashboard/show'));
 router.addRoute('/invoices', require('routes/invoices/index'));
+router.addRoute('/invoices/new', require('routes/invoices/new'));
 router.addRoute('*', () => window.location.hash = '/dashboard');
 
 window.onhashchange = route;

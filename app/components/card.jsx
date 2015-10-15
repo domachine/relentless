@@ -1,9 +1,9 @@
 var React = require('react');
 
 var Card = module.exports = (props) =>
-  <div className="card primary-border-color one-half push-one-quarter">
+  <div className="card primary-border-color">
     <div className="card__head">
-      <div className="counter secondary-color">{props.counter}</div>
+      {props.head}
     </div>
     <div className="card__body primary-border-color">
       <h4 className="card__title primary-font">

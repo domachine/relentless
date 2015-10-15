@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "babelify": "^6.3.0",
+    "highland": "^2.5.1",
     "parcelify": "^2.1.0",
     "react-dom": "^0.14.0",
     "routes": "^2.1.0"

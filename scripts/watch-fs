@@ -1,0 +1,10 @@
+#!/bin/bash
+
+while true; do
+  inotifywait -e close_write -e moved_to -e create \
+    validate_doc_update.js \
+    -r _attachments \
+    -r views \
+    -r rewrites.json \
+    && couchapp push
+done

@@ -40,6 +40,16 @@ a.inverse-color:hover {
 }
 
 
+.secondary-background-color {
+  background-color: #F37260 !important;
+}
+
+
+.success-background-color {
+  background-color: #44C39D !important;
+}
+
+
 .primary-border-color {
   border-color: #403227 !important;
 }
@@ -85,4 +95,19 @@ a.inverse-color:hover {
 .padded {
   padding: 8px !important;
   box-sizing: border-box !important;
+}
+
+
+.text-left {
+  text-align: left;
+}
+
+
+.text-center {
+  text-align: center;
+}
+
+
+.text-right {
+  text-align: right;
 }

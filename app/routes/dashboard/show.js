@@ -3,4 +3,4 @@ var React = require('react');
 var _ = require('highland');
 
 module.exports = (params, render) =>
-  render(<View/>)
+  render(View, {})

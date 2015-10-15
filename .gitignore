@@ -1,0 +1,5 @@
+/couch/*
+/_attachments/app.*
+/config.json
+/log.txt
+/node_modules/*

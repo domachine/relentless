@@ -19,6 +19,11 @@
   border-radius: 8px;
 }
 
+.card--dashed {
+  border: dashed 1px #AFACAC;
+  color: #AFACAC;
+}
+
 .card__head {
   text-align: center;
   padding: 10px;
@@ -48,18 +53,7 @@
 
 
 
-/* Primary toolbar */
-
-.primary-toolbar {
-}
-
-.primary-toolbar__item {
-  display: inline-block;
-  line-height: 80px;
-  padding: 0 10px;
-}
-
-.primary-toolbar__logo {
+.site-logo {
   display: inline-block;
   font-weight: bold;
   font-size: 32px;
@@ -77,4 +71,46 @@
 .primary-content {
   position: relative;
   top: 50px;
+}
+
+
+
+
+
+.price {
+  text-align: right;
+}
+
+.price:after {
+  content: "€";
+  display: inline-block;
+  padding: 0 10px 0 10px;
+}
+
+
+
+
+
+.btn {
+  box-sizing: border-box;
+  font-size: 20px;
+  display: inline-block;
+  text-align: center;
+}
+
+a.btn {
+  padding: 15px 0;
+}
+
+.btn--round {
+  border-radius: 100%;
+  height: 50px;
+  width: 50px;
+  border: none;
+}
+
+.btn--round.btn--small {
+  font-size: 15px;
+  height: 30px;
+  width: 30px;
 }

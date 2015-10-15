@@ -1,13 +1,14 @@
 var React = require('react');
 
 module.exports = props =>
-  <div className="primary-toolbar primary-background-color">
+  <div className="toolbar toolbar--primary primary-background-color">
     <div className="container">
-      <a href="#" className="primary-toolbar__logo primary-font inverse-color">
+      <a href="#" className="site-logo primary-font inverse-color">
         DB
       </a>
-      <a href="#/invoices" className="primary-toolbar__item inverse-color">
+      <a href="#/invoices" className="toolbar__item toolbar__item--primary inverse-color">
         Invoices
       </a>
+      {props.children}
     </div>
   </div>

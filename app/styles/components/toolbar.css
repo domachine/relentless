@@ -1,0 +1,43 @@
+/* Toolbar */
+
+.toolbar {
+  width: 100%;
+  height: 60px;
+  display: inline-block;
+}
+
+.toolbar--primary {
+  height: 80px;
+}
+
+.toolbar--secondary {
+  border-radius: 8px;
+}
+
+.toolbar--sticky {
+  position: fixed;
+  bottom: 0;
+}
+
+.toolbar__item {
+  display: inline-block;
+  line-height: 60px;
+  padding: 0 10px;
+}
+
+.toolbar__item--primary {
+  display: inline-block;
+  line-height: 80px;
+  padding: 0 10px;
+}
+
+.toolbar__item--btn {
+  background-color: transparent;
+  height: 100%;
+  border: none;
+}
+
+.toolbar__item--center {
+  display: block;
+  margin: auto;
+}

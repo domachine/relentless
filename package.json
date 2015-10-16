@@ -6,8 +6,7 @@
   "style": "app/styles/**/*.css",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "NODE_PATH=app watchify -t babelify app/app.js -o _attachments/app.js -p [ parcelify -wo _attachments/app.css -v ] -v & scripts/watch-fs",
-    "start": "pouchdb-server -d couch"
+    "watch": "NODE_PATH=app watchify -t babelify app/app.js -o app.js -p [ parcelify -wo app.css -v ] -v"
   },
   "author": "",
   "license": "ISC",

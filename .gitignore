@@ -1,5 +1,5 @@
 /couch/*
-/app.*
+/public/app.*
 /config.json
 /log.txt
 /node_modules/*

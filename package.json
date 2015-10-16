@@ -6,16 +6,18 @@
   "style": "app/styles/**/*.css",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "NODE_PATH=app watchify -t babelify app/app.js -o app.js -p [ parcelify -wo app.css -v ] -v"
+    "start": "NODE_PATH=app watchify -t babelify app/app.js -o public/app.js -p [ parcelify -wo public/app.css -v ] -v & livereload public & serve public"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "babelify": "^6.3.0",
     "highland": "^2.5.1",
+    "livereload": "^0.3.7",
     "parcelify": "^2.1.0",
     "pouchdb-server": "^1.0.0",
     "react-dom": "^0.14.0",
-    "routes": "^2.1.0"
+    "routes": "^2.1.0",
+    "serve": "^1.4.0"
   }
 }

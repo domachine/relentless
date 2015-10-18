@@ -1,9 +1,26 @@
 var React = require('react');
+var uuid = require('uuid');
 
 var db = require('db');
 var dispatch = require('stores').dispatch;
 var actions = require('actions');
 var Page = require('components/page.jsx');
+
+var addLineItem = () =>
+  e => {
+    e.preventDefault();
+    let lineItem = {
+      _id: uuid.v4(),
+      amount: 1
+    };
+    dispatch(actions.addEditingInvoiceLineItem(lineItem));
+  };
+
+var destroyLineItem = index =>
+  e => {
+    e.preventDefault();
+    dispatch(actions.destroyEditingInvoiceLineItem(index));
+  };
 
 var inputField = (props, field) => ({
   onChange(e) {
@@ -12,6 +29,9 @@ var inputField = (props, field) => ({
 
   value: (props.editingInvoice || props.invoice)[field] || ''
 });
+
+var lineItems = (props) =>
+  (props.editingInvoice || props.invoice).lineItems;
 
 module.exports = props =>
   <Page title="New Invoice">
@@ -22,9 +42,9 @@ module.exports = props =>
         </div>
         <div className="invoice__address-space">
           <input type="text" className="invoice__input invoice__input--address inverse-background-color" placeholder="Name" {... inputField(props, 'name')}/>
-          <input type="text" className="invoice__input invoice__input--address inverse-background-color" placeholder="Street address"/>
-          <input type="text" className="invoice__input invoice__input--address inverse-background-color" placeholder="Postalcode"/>
-          <input type="text" className="invoice__input invoice__input--address inverse-background-color" placeholder="Address locality"/>
+          <input type="text" className="invoice__input invoice__input--address inverse-background-color" placeholder="Street address" {... inputField(props, 'streetAddress')}/>
+          <input type="text" className="invoice__input invoice__input--address inverse-background-color" placeholder="Postalcode" {... inputField(props, 'postalCode')}/>
+          <input type="text" className="invoice__input invoice__input--address inverse-background-color" placeholder="Address locality" {... inputField(props, 'addressLocality')}/>
         </div>
       </div>
       <div className="invoice__from-address">
@@ -37,7 +57,7 @@ module.exports = props =>
       </div>
       <div className="invoice__body">
         <h4>Rechnung Nr 2.</h4>
-        <textarea className="invoice__input inverse-background-color" rows={5} placeholder="Message ..."/>
+        <textarea className="invoice__input inverse-background-color" rows={5} placeholder="Message ..." {... inputField(props, 'message')}/>
         <table className="invoice__table">
           <thead>
             <tr>
@@ -49,28 +69,30 @@ module.exports = props =>
             </tr>
           </thead>
           <tbody>
-            <tr className="invoice__table-row">
-              <td className="invoice__table-cell text-center">
-                <input className="invoice__input text-center" type="number"/>
-              </td>
-              <td className="invoice__table-cell text-center">
-                <input className="invoice__input text-center" type="text"/>
-              </td>
-              <td className="invoice__table-cell price">
-                <input className="invoice__input invoice__input--price" type="number"/>
-              </td>
-              <td className="invoice__table-cell price">
-                300,00
-              </td>
-              <td className="invoice__table-cell text-right">
-                <button className="btn btn--round btn--small secondary-background-color inverse-color">
-                  <i className="fa fa-close"/>
-                </button>
-              </td>
-            </tr>
+            {lineItems(props).map((lineItem, i) =>
+              <tr key={lineItem._id} className="invoice__table-row">
+                <td className="invoice__table-cell text-center">
+                  <input className="invoice__input text-center" type="number"/>
+                </td>
+                <td className="invoice__table-cell text-center">
+                  <input className="invoice__input text-center" type="text"/>
+                </td>
+                <td className="invoice__table-cell price">
+                  <input className="invoice__input invoice__input--price" type="number"/>
+                </td>
+                <td className="invoice__table-cell price">
+                  300,00
+                </td>
+                <td className="invoice__table-cell text-right">
+                  <button className="btn btn--round btn--small secondary-background-color inverse-color" onClick={destroyLineItem(i)}>
+                    <i className="fa fa-close"/>
+                  </button>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
-        <button className="btn btn--round btn--small primary-background-color inverse-color">
+        <button className="btn btn--round btn--small primary-background-color inverse-color" onClick={addLineItem()}>
           <i className="fa fa-plus"/>
         </button>
       </div>

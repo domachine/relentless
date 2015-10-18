@@ -20,7 +20,7 @@ setup()
     _([locationStore(router).stream, store.stream])
       .merge()
       .scan({}, _.flip(_.extend))
-      .each((state) => update(state));
+      .each(update);
   });
 
 function error404() {

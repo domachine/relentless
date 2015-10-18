@@ -55,6 +55,6 @@ function setup() {
               design,
               (k, v) => typeof v === 'function' ? v.toString() : v
             ))
-        )) : _([null])
+        )) : _([])
     );
 }

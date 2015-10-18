@@ -1,6 +1,17 @@
 var React = require('react');
 
+var db = require('db');
+var dispatch = require('stores').dispatch;
+var actions = require('actions');
 var Page = require('components/page.jsx');
+
+var inputField = (props, field) => ({
+  onChange(e) {
+    dispatch(actions.updateEditingInvoice({[field]: e.target.value}));
+  },
+
+  value: (props.editingInvoice || props.invoice)[field] || ''
+});
 
 module.exports = props =>
   <Page title="New Invoice">
@@ -10,7 +21,7 @@ module.exports = props =>
           <span>Dominik Burgdörfer - Anne-Frank-Weg 14, 89075 Ulm</span>
         </div>
         <div className="invoice__address-space">
-          <input type="text" className="invoice__input invoice__input--address inverse-background-color" placeholder="Name"/>
+          <input type="text" className="invoice__input invoice__input--address inverse-background-color" placeholder="Name" {... inputField(props, 'name')}/>
           <input type="text" className="invoice__input invoice__input--address inverse-background-color" placeholder="Street address"/>
           <input type="text" className="invoice__input invoice__input--address inverse-background-color" placeholder="Postalcode"/>
           <input type="text" className="invoice__input invoice__input--address inverse-background-color" placeholder="Address locality"/>
@@ -74,7 +85,7 @@ module.exports = props =>
         </div>
       </footer>
       <div className="invoice__toolbar toolbar toolbar--secondary toolbar--sticky success-background-color">
-        <button className="toolbar__item toolbar__item--btn toolbar__item--center inverse-color">
+        <button className="toolbar__item toolbar__item--btn toolbar__item--center inverse-color" onClick={e => dispatch(actions.createInvoice(db, props.editingInvoice))}>
           <i className="fa fa-save fa-2x"/>
         </button>
       </div>

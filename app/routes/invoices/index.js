@@ -1,6 +1,4 @@
-var React = require('react');
-
+var _ = require('highland');
 var View = require('views/invoices/index.jsx');
 
-module.exports = (params, render) =>
-  render(View, {})
+module.exports = params => _([{View}]);

@@ -23,10 +23,6 @@ setup()
       .each(update);
   });
 
-function error404() {
-  throw new Error('Route handler didn\'t return a view');
-}
-
 function update(state) {
   window.STATE = state;
   if (typeof state.View === 'string') {

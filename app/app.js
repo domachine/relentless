@@ -19,7 +19,7 @@ setup()
   .apply(() => {
     _([locationStore(router).stream, store.stream])
       .merge()
-      .scan({}, (state, update) => ({... state, ... update}))
+      .scan({}, _.flip(_.extend))
       .each((state) => update(state));
   });
 

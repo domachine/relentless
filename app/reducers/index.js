@@ -17,6 +17,14 @@ exports.editingInvoice = reducer({lineItems: []}, {
   DESTROY_EDITING_INVOICE_LINE_ITEM: (state, action) => ({
     ... state,
     lineItems: state.lineItems.filter((item, index) => index !== action.index)
+  }),
+  UPDATE_EDITING_INVOICE_LINE_ITEM: (state, action) => ({
+    ... state,
+    lineItems: state.lineItems.map((lineItem, i) =>
+      i === action.index
+        ? {... lineItem, ... action.data}
+        : lineItem
+    )
   })
 });
 

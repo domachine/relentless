@@ -32,6 +32,12 @@ exports.addEditingInvoiceLineItem = data => _([{
 exports.destroyEditingInvoiceLineItem = index => _([{
   type: 'DESTROY_EDITING_INVOICE_LINE_ITEM',
   index
+}]);
+
+exports.updateEditingInvoiceLineItem = (index, data) => _([{
+  type: 'UPDATE_EDITING_INVOICE_LINE_ITEM',
+  index,
+  data
 }])
 
 function loading(stream) {

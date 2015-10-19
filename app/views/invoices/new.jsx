@@ -1,19 +1,24 @@
 var React = require('react');
 var uuid = require('uuid');
+var _ = require('highland');
+var merge = require('merge');
 
 var db = require('db');
 var dispatch = require('stores').dispatch;
 var actions = require('actions');
 var Page = require('components/page.jsx');
 
-var addLineItem = () =>
+var addLineItem = (props) =>
   e => {
     e.preventDefault();
     let lineItem = {
       _id: uuid.v4(),
       amount: 1
     };
-    dispatch(actions.addEditingInvoiceLineItem(lineItem));
+    dispatch(actions.updateEditingInvoice({
+      ... invoice(props),
+      lineItems: invoice(props).lineItems.concat(lineItem)
+    }));
   };
 
 var destroyLineItem = index =>
@@ -24,10 +29,35 @@ var destroyLineItem = index =>
 
 var inputField = (props, field) => ({
   onChange(e) {
-    dispatch(actions.updateEditingInvoice({[field]: e.target.value}));
+    dispatch(actions.updateEditingInvoice(
+      merge.recursive(
+        invoice(props),
+        field.split('.')
+          .reverse()
+          .reduce((obj, key) => ({
+            [key]: obj
+          }), e.target.value)
+      )
+    ));
   },
 
-  value: (props.editingInvoice || props.invoice)[field] || ''
+  value: field.split('.')
+    .reduce((value, key) => (value || {})[key] || '', invoice(props))
+});
+
+var lineItemInputField = (props, index, field) => ({
+  onChange(e) {
+    dispatch(actions.updateEditingInvoice({
+      ... invoice(props),
+      lineItems: invoice(props).lineItems.map((lineItem, i) =>
+        i === index
+          ? {... lineItem, [field]: e.target.value}
+          : lineItem
+      )
+    }))
+  },
+
+  value: invoice(props).lineItems[index][field] || ''
 });
 
 var invoice = props =>
@@ -43,10 +73,10 @@ module.exports = props =>
           <span>Dominik Burgdörfer - Anne-Frank-Weg 14, 89075 Ulm</span>
         </div>
         <div className="invoice__address-space">
-          <input type="text" className="invoice__input invoice__input--address inverse-background-color" placeholder="Name" {... inputField(props, 'name')}/>
-          <input type="text" className="invoice__input invoice__input--address inverse-background-color" placeholder="Street address" {... inputField(props, 'streetAddress')}/>
-          <input type="text" className="invoice__input invoice__input--address inverse-background-color" placeholder="Postalcode" {... inputField(props, 'postalCode')}/>
-          <input type="text" className="invoice__input invoice__input--address inverse-background-color" placeholder="Address locality" {... inputField(props, 'addressLocality')}/>
+          <input type="text" className="invoice__input invoice__input--address inverse-background-color" placeholder="Name" {... inputField(props, 'customer.name')}/>
+          <input type="text" className="invoice__input invoice__input--address inverse-background-color" placeholder="Street address" {... inputField(props, 'customer.streetAddress')}/>
+          <input type="text" className="invoice__input invoice__input--address inverse-background-color" placeholder="Postalcode" {... inputField(props, 'customer.postalCode')}/>
+          <input type="text" className="invoice__input invoice__input--address inverse-background-color" placeholder="Address locality" {... inputField(props, 'customer.addressLocality')}/>
         </div>
       </div>
       <div className="invoice__from-address">
@@ -74,13 +104,13 @@ module.exports = props =>
             {lineItems(props).map((lineItem, i) =>
               <tr key={lineItem._id} className="invoice__table-row">
                 <td className="invoice__table-cell text-center">
-                  <input className="invoice__input text-center" type="number"/>
+                  <input className="invoice__input text-center" type="number" {... lineItemInputField(props, i, 'amount')}/>
                 </td>
                 <td className="invoice__table-cell text-center">
-                  <input className="invoice__input text-center" type="text"/>
+                  <input className="invoice__input text-center" type="text" {... lineItemInputField(props, i, 'product')}/>
                 </td>
                 <td className="invoice__table-cell price">
-                  <input className="invoice__input invoice__input--price" type="number"/>
+                  <input className="invoice__input invoice__input--price" type="number" {... lineItemInputField(props, i, 'price')}/>
                 </td>
                 <td className="invoice__table-cell price">
                   300,00
@@ -94,7 +124,7 @@ module.exports = props =>
             )}
           </tbody>
         </table>
-        <button className="btn btn--round btn--small primary-background-color inverse-color" onClick={addLineItem()}>
+        <button className="btn btn--round btn--small primary-background-color inverse-color" onClick={addLineItem(props)}>
           <i className="fa fa-plus"/>
         </button>
       </div>

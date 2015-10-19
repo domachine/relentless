@@ -15,42 +15,38 @@ router.addRoute('/invoices', require('routes/invoices/index'));
 router.addRoute('/invoices/new', require('routes/invoices/new'));
 router.addRoute('*', () => _([{View: '/dashboard'}]));
 
-setup()
-  .apply(() => {
-    _([locationStore(router).stream, store.stream])
-      .merge()
-      .scan({}, _.flip(_.extend))
-      .each(update);
-  });
-
-function update(state) {
-  window.STATE = state;
-  if (typeof state.View === 'string') {
-    window.location.hash = state.View;
-  } else if (state.View != null) {
-    ReactDOM.render(<state.View {... state}/>, document.querySelector('#app'));
-  }
-}
-
 /**
  * Update design doc if necessary.
  */
 
-function setup() {
-  return _(db.get('_design/relentless'))
-    .errors((err, push) =>
-      err.status === 404 ? push(null, {}) : push(err)
-    )
-    .map(doc => doc.version === design.version)
-    .flatMap(uptodate =>
-      !uptodate
-        ? _(db.put(
+_(db.get('_design/relentless'))
+  .errors((err, push) =>
+    err.status === 404 ? push(null, {}) : push(err)
+  )
+  .flatMap(current =>
+    current.version !== design.version
+      ? _(db.put(
+        _.extend(stringifyDesign(design), {_rev: current._rev})
+      )) : _([current])
+  )
+  .apply(() => {
+    _([locationStore(router).stream, store.stream])
+      .merge()
+      .scan({}, _.flip(_.extend))
+      .each(state => {
+        window.STATE = state;
+        if (typeof state.View === 'string') {
+          window.location.hash = state.View;
+        } else if (state.View != null) {
+          ReactDOM.render(<state.View {... state}/>, document.querySelector('#app'));
+        }
+      });
+  });
 
-            // Little hack to conveniently convert the design doc to JSON.
-            JSON.parse(JSON.stringify(
-              design,
-              (k, v) => typeof v === 'function' ? v.toString() : v
-            ))
-        )) : _([])
-    );
-}
+var stringifyDesign = design =>
+
+  // Little hack to conveniently convert the design doc to JSON.
+  JSON.parse(JSON.stringify(
+    design,
+    (k, v) => typeof v === 'function' ? v.toString() : v
+  ));

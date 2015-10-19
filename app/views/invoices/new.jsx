@@ -30,8 +30,10 @@ var inputField = (props, field) => ({
   value: (props.editingInvoice || props.invoice)[field] || ''
 });
 
-var lineItems = (props) =>
-  (props.editingInvoice || props.invoice).lineItems;
+var invoice = props =>
+  props.editingInvoice || props.invoice;
+
+var lineItems = (props) => invoice(props).lineItems;
 
 module.exports = props =>
   <Page title="New Invoice">
@@ -56,7 +58,7 @@ module.exports = props =>
         Datum: 09.08.2015
       </div>
       <div className="invoice__body">
-        <h4>Rechnung Nr 2.</h4>
+        <h4>Rechnung Nr {invoice(props)._id.split(':')[1]}.</h4>
         <textarea className="invoice__input inverse-background-color" rows={5} placeholder="Message ..." {... inputField(props, 'message')}/>
         <table className="invoice__table">
           <thead>

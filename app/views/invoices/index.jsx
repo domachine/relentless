@@ -19,7 +19,7 @@ module.exports = class InvoicesIndex extends React.Component {
       filter: '_view',
       view: 'relentless/invoices-by-number',
       live: true
-    })
+    });
     _('change', this.changes)
       .flatMap(() =>
         _(utils.db.query('relentless/invoices-by-number', {
@@ -58,7 +58,7 @@ module.exports = class InvoicesIndex extends React.Component {
   }
 }
 
-function Invoice(props) {
+var Invoice = props => {
   let head = (<i className="fa fa-file-o fa-3x"/>);
 
   return (

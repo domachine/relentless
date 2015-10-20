@@ -1,19 +1,48 @@
-var _ = require('highland');
-var router = require('routes')();
-var React = require('react');
-var ReactDOM = require('react-dom');
+import {EventEmitter} from 'events';
+import _ from 'highland';
+import Router from 'routes';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-var store = require('./stores');
-var locationStore = require('./stores/location_store');
-var renderer = require('./renderer');
-var db = require('./db');
-var design = require('./design');
-var actions = require('./actions');
+import reduce from './reducers';
+import db from './db';
+import design from './design';
 
+var router = Router();
 router.addRoute('/dashboard', require('routes/dashboard/show'));
 router.addRoute('/invoices', require('routes/invoices/index'));
 router.addRoute('/invoices/new', require('routes/invoices/new'));
-router.addRoute('*', () => _([{View: '/dashboard'}]));
+router.addRoute('*', () => ({_url: '/dashboard'}));
+
+var store = new EventEmitter();
+var actionStream = _('action', store);
+var locationStream = _(push => {
+  var trigger = window.onhashchange = () => push(null, window.location.hash);
+  trigger();
+}).map(hash => (hash || '#').slice(1));
+
+var stateStream = _.merge([actionStream, locationStream])
+  .map(a =>
+    typeof a === 'string'
+      ? _([{_view: null, _url: null}])
+          .concat(
+            _.merge([
+              _(db.info()),
+              _([router.match(a)])
+                .map(m => m.fn(m.params))
+                .flatMap(r => _.isStream(r) ? r : _([r]))
+            ])
+          )
+          .map(a => a.type === undefined ? {data: a} : a)
+      : a
+  )
+  .flatMap(a => _.isStream(a) ? a : _([a]))
+  .doto(a => console.log('action', a))
+  .scan({}, (state, action) =>
+    action.type === undefined
+      ? {... state, ... action.data}
+      : reduce(state, action)
+  );
 
 /**
  * Update design doc if necessary.
@@ -30,19 +59,20 @@ _(db.get('_design/relentless'))
       )) : _([current])
   )
   .apply(() => {
-    _([locationStore(router).stream, store.stream])
-      .merge()
-      .scan({}, _.flip(_.extend))
-      .each(state => {
-        window.STATE = state;
-        if (typeof state.View === 'string') {
-          window.location.hash = state.View;
-        } else if (state.View != null) {
-          ReactDOM.render(<state.View {... state}/>, document.querySelector('#app'));
-        }
-      });
-  });
+    stateStream.each(state => {
+      var props = {
+        ... state,
+        dispatch: store.emit.bind(store, 'action')
+      };
 
+      window.STATE = state;
+      if (typeof state._url === 'string') {
+        window.location.hash = state._url;
+      } else if (state._view != null) {
+        ReactDOM.render(<state._view {... props}/>, document.querySelector('#app'));
+      }
+    });
+  });
 var stringifyDesign = design =>
 
   // Little hack to conveniently convert the design doc to JSON.

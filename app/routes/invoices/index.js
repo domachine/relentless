@@ -8,4 +8,4 @@ module.exports = params =>
     include_docs: true,
     descending: true
   }))
-  .append({View});
+  .append({_view: View});

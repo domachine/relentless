@@ -9,9 +9,10 @@ module.exports = (params, render) =>
       (rows[0] || {key: 1}).key
     )
     .map(number => ({
-      View,
-      invoice: {
+      type: 'REPLACE_EDITING_INVOICE',
+      editingInvoice: {
         _id: `de.domachine.invoice:${number + 1}`,
         lineItems: []
       }
-    }));
+    }))
+    .append({_view: View})

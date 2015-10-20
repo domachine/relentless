@@ -11,13 +11,17 @@ exports.config = reducer({}, {
 
 exports.editingInvoice = reducer({lineItems: []}, {
   HYDRATE_EDITING_INVOICE: (state, action) => action.invoice,
+
   UPDATE_EDITING_INVOICE: (state, action) => ({... state, ... action.data}),
+
   ADD_EDITING_INVOICE_LINE_ITEM: (state, action) =>
     ({... state, lineItems: [... state.lineItems, action.data]}),
+
   DESTROY_EDITING_INVOICE_LINE_ITEM: (state, action) => ({
     ... state,
     lineItems: state.lineItems.filter((item, index) => index !== action.index)
   }),
+
   UPDATE_EDITING_INVOICE_LINE_ITEM: (state, action) => ({
     ... state,
     lineItems: state.lineItems.map((lineItem, i) =>
@@ -25,7 +29,14 @@ exports.editingInvoice = reducer({lineItems: []}, {
         ? {... lineItem, ... action.data}
         : lineItem
     )
-  })
+  }),
+
+  REPLACE_EDITING_INVOICE: (state, action) =>
+
+    // Make sure unsaved changes aren't lost when navigating away.
+    (state || {})._id === action.editingInvoice._id
+      ? state
+      : action.editingInvoice
 });
 
 function reducer(def, map) {

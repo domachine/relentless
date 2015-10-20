@@ -4,7 +4,6 @@ var _ = require('highland');
 var merge = require('merge');
 
 var db = require('db');
-var dispatch = require('stores').dispatch;
 var actions = require('actions');
 var Page = require('components/page.jsx');
 
@@ -15,23 +14,23 @@ var addLineItem = (props) =>
       _id: uuid.v4(),
       amount: 1
     };
-    dispatch(actions.updateEditingInvoice({
-      ... invoice(props),
-      lineItems: invoice(props).lineItems.concat(lineItem)
+    props.dispatch(actions.updateEditingInvoice({
+      ... props.editingInvoice,
+      lineItems: props.editingInvoice.lineItems.concat(lineItem)
     }));
   };
 
 var destroyLineItem = index =>
   e => {
     e.preventDefault();
-    dispatch(actions.destroyEditingInvoiceLineItem(index));
+    props.dispatch(actions.destroyEditingInvoiceLineItem(index));
   };
 
 var inputField = (props, field) => ({
   onChange(e) {
-    dispatch(actions.updateEditingInvoice(
+    props.dispatch(actions.updateEditingInvoice(
       merge.recursive(
-        invoice(props),
+        props.editingInvoice,
         field.split('.')
           .reverse()
           .reduce((obj, key) => ({
@@ -42,14 +41,14 @@ var inputField = (props, field) => ({
   },
 
   value: field.split('.')
-    .reduce((value, key) => (value || {})[key] || '', invoice(props))
+    .reduce((value, key) => (value || {})[key] || '', props.editingInvoice)
 });
 
 var lineItemInputField = (props, index, field) => ({
   onChange(e) {
-    dispatch(actions.updateEditingInvoice({
-      ... invoice(props),
-      lineItems: invoice(props).lineItems.map((lineItem, i) =>
+    props.dispatch(actions.updateEditingInvoice({
+      ... props.editingInvoice,
+      lineItems: props.editingInvoice.lineItems.map((lineItem, i) =>
         i === index
           ? {... lineItem, [field]: e.target.value}
           : lineItem
@@ -57,13 +56,8 @@ var lineItemInputField = (props, index, field) => ({
     }))
   },
 
-  value: invoice(props).lineItems[index][field] || ''
+  value: props.editingInvoice.lineItems[index][field] || ''
 });
-
-var invoice = props =>
-  props.editingInvoice || props.invoice;
-
-var lineItems = (props) => invoice(props).lineItems;
 
 module.exports = props =>
   <Page title="New Invoice">
@@ -88,7 +82,7 @@ module.exports = props =>
         Datum: 09.08.2015
       </div>
       <div className="invoice__body">
-        <h4>Rechnung Nr {invoice(props)._id.split(':')[1]}.</h4>
+        <h4>Rechnung Nr {props.editingInvoice._id.split(':')[1]}.</h4>
         <textarea className="invoice__input inverse-background-color" rows={5} placeholder="Message ..." {... inputField(props, 'message')}/>
         <table className="invoice__table">
           <thead>
@@ -101,7 +95,7 @@ module.exports = props =>
             </tr>
           </thead>
           <tbody>
-            {lineItems(props).map((lineItem, i) =>
+            {props.editingInvoice.lineItems.map((lineItem, i) =>
               <tr key={lineItem._id} className="invoice__table-row">
                 <td className="invoice__table-cell text-center">
                   <input className="invoice__input text-center" type="number" {... lineItemInputField(props, i, 'amount')}/>
@@ -139,7 +133,7 @@ module.exports = props =>
         </div>
       </footer>
       <div className="invoice__toolbar toolbar toolbar--secondary toolbar--sticky success-background-color">
-        <button className="toolbar__item toolbar__item--btn toolbar__item--center inverse-color" onClick={e => dispatch(actions.createInvoice(db, props.editingInvoice))}>
+        <button className="toolbar__item toolbar__item--btn toolbar__item--center inverse-color" onClick={e => props.dispatch(actions.createInvoice(db, props.editingInvoice))}>
           <i className="fa fa-save fa-2x"/>
         </button>
       </div>

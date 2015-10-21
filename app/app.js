@@ -33,11 +33,16 @@ var stateStream = _.merge([actionStream, locationStream])
                 .flatMap(r => _.isStream(r) ? r : _([r]))
             ])
           )
-          .map(a => a.type === undefined ? {data: a} : a)
+          .map(a =>
+            a.type === undefined && typeof a !== 'string'
+              ? {data: a}
+              : a
+          )
       : a
   )
   .flatMap(a => _.isStream(a) ? a : _([a]))
-  .doto(a => console.log('action', a))
+  .map(a => typeof a === 'string' ? {data: {_url: a}} : a)
+  .doto(a => console.log('action', a.data))
   .scan({}, (state, action) =>
     action.type === undefined
       ? {... state, ... action.data}

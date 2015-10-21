@@ -16,7 +16,7 @@ exports.fetchConfig = (db) =>
 exports.createInvoice = (db, invoice) =>
   loading(
     _(db.put(invoice))
-      .map(res => window.location.href = `#/invoices/${res.id}`)
+      .map(res => `#/invoices/${res.id}`)
   );
 
 exports.updateEditingInvoice = data => _([{

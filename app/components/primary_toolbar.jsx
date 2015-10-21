@@ -10,5 +10,8 @@ module.exports = props =>
         Invoices
       </a>
       {props.children}
+      <a href="#" className="toolbar__item toolbar__item--primary toolbar__item--right inverse-color">
+        <i className="fa fa-cog"/>
+      </a>
     </div>
   </div>

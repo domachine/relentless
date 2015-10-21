@@ -18,7 +18,7 @@ module.exports = (props) =>
       </div>
       <div className="one-half float-left">
         <div className="one-half push-one-quarter">
-          <Card head={<div className="counter secondary-color">14</div>}>
+          <Card head={<div className="counter secondary-color">{props.total_invoices}</div>}>
             <a href="#/invoices" className="primary-color">
               Invoices
             </a>

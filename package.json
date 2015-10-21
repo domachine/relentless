@@ -11,7 +11,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "NODE_PATH=app watchify app/app.js -o public/app.js -p [ parcelify -wo public/app.css -v ] -v & livereload public & serve public"
+    "start": "NODE_PATH=app watchify app/app.js -o public/app.js -p [ parcelify -wo public/app.css -v ] -v & serve public"
   },
   "author": "Dominik Burgdörfer <db@domachine.de>",
   "license": "ISC",
@@ -26,7 +26,6 @@
     "uuid": "^2.0.1"
   },
   "devDependencies": {
-    "livereload": "^0.3.7",
     "serve": "^1.4.0",
     "watchify": "^3.4.0"
   }

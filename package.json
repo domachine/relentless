@@ -21,6 +21,7 @@
     "merge": "^1.2.0",
     "parcelify": "^2.1.0",
     "pouchdb": "^5.0.0",
+    "react": "^0.14.0",
     "react-dom": "^0.14.0",
     "routes": "^2.1.0",
     "uuid": "^2.0.1"

@@ -12,6 +12,7 @@ module.exports = (params, render) =>
       type: 'REPLACE_EDITING_INVOICE',
       editingInvoice: {
         _id: `de.domachine.invoice:${number + 1}`,
+        type: 'invoice',
         lineItems: []
       }
     }))

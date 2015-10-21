@@ -12,7 +12,7 @@ var router = Router();
 router.addRoute('/dashboard', require('routes/dashboard/show'));
 router.addRoute('/invoices', require('routes/invoices/index'));
 router.addRoute('/invoices/new', require('routes/invoices/new'));
-router.addRoute('*', () => ({_url: '/dashboard'}));
+router.addRoute('*', () => '/dashboard');
 
 var store = new EventEmitter();
 var actionStream = _('action', store);

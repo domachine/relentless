@@ -14,10 +14,7 @@ var addLineItem = (props) =>
       _id: uuid.v4(),
       amount: 1
     };
-    props.dispatch(actions.updateEditingInvoice({
-      ... props.editingInvoice,
-      lineItems: props.editingInvoice.lineItems.concat(lineItem)
-    }));
+    props.dispatch(actions.addEditingInvoiceLineItem(lineItem));
   };
 
 var destroyLineItem = index =>

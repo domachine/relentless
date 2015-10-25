@@ -46,9 +46,8 @@ var stateStream = _.merge([actionStream, locationStream])
   // Flatten all actions
   .flatMap(e => e.type === 'ACTION' && _.isStream(e.payload)
     ? e.payload
-    : _([e])
+    : _([e.payload])
   )
-  .map(e => e.payload)
   .map(a => typeof a === 'string' ? {type: '@', data: {_url: a}} : a)
   .scan({}, (state, action) =>
     action.type === '@'

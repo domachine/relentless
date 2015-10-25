@@ -27,7 +27,7 @@ var middleware = () => _(db.info())
 
 var stateStream = _.merge([actionStream, locationStream])
   .flatMap(e => e.type === 'LOCATION_CHANGE'
-    ? _([{_view: null}])
+    ? _([{_view: null, _url: null}])
         .concat(
           _.merge([middleware(), router(e.payload)])
         )
@@ -48,7 +48,6 @@ var stateStream = _.merge([actionStream, locationStream])
     ? e.payload
     : _([e])
   )
-  .doto(e => console.log('event', e))
   .map(e => e.payload)
   .map(a => typeof a === 'string' ? {type: '@', data: {_url: a}} : a)
   .scan({}, (state, action) =>

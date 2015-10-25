@@ -10,11 +10,10 @@ var stream = _(push => {
   .map(hash => new Event('LOCATION_CHANGE', hash));
 
 var toRouter = routes =>
-  Object.keys(routes)
-    .reduce((router, route) => {
-      router.addRoute(route, routes[route]);
-      return router;
-    }, _Router());
+  routes.reduce((router, route) => {
+    router.addRoute(route[0], route[1]);
+    return router;
+  }, _Router());
 
 var Router = routes => {
   let router = toRouter(routes);

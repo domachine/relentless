@@ -16,11 +16,12 @@ var actionStream = _(push =>
   })
 );
 
-var router = Router({
-  '/invoices': require('routes/invoices/index'),
-  '/invoices/new': require('routes/invoices/new'),
-  '*': () => '/dashboard'
-});
+var router = Router([
+  ['/dashboard', require('routes/dashboard/show')],
+  ['/invoices', require('routes/invoices/index')],
+  ['/invoices/new', require('routes/invoices/new')],
+  ['*', () => '/dashboard']
+]);
 
 var middleware = () => _(db.info())
 

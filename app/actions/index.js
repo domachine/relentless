@@ -18,7 +18,7 @@ exports.createInvoice = (db, invoice) =>
     _(db.put(invoice))
       .flatMap(res =>
         exports.updateEditingInvoice({_rev: res.rev})
-          .append(`#/invoices/${res.id}/edit`)
+          .append(`#/invoices/${res.id.split(':')[1]}/edit`)
       )
   );
 

@@ -63,7 +63,7 @@ var Invoice = props => {
 
   return (
     <Card head={head} className="primary-border-color">
-      <span>Nr. {props.number}</span>
+      <a href={`#/invoices/${props.number}/edit`}>Nr. {props.number}</a>
     </Card>
   );
 }

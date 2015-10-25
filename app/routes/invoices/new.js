@@ -6,7 +6,7 @@ var db = require('utils').db;
 module.exports = (params, render) =>
   _(db.query('relentless/invoices-by-number', {descending: true}))
     .map(({rows}) =>
-      (rows[0] || {key: 1}).key
+      (rows[0] || {key: 0}).key
     )
     .map(number => ({
       type: 'REPLACE_EDITING_INVOICE',

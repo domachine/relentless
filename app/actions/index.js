@@ -16,8 +16,13 @@ exports.fetchConfig = (db) =>
 exports.createInvoice = (db, invoice) =>
   loading(
     _(db.put(invoice))
-      .map(res => `#/invoices/${res.id}`)
+      .flatMap(res =>
+        exports.updateEditingInvoice({_rev: res.rev})
+          .append(`#/invoices/${res.id}/edit`)
+      )
   );
+
+exports.saveInvoice = exports.createInvoice;
 
 exports.updateEditingInvoice = data => _([{
   type: 'UPDATE_EDITING_INVOICE',

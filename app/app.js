@@ -20,6 +20,7 @@ var router = Router([
   ['/dashboard', require('routes/dashboard/show')],
   ['/invoices', require('routes/invoices/index')],
   ['/invoices/new', require('routes/invoices/new')],
+  ['/invoices/:id/edit', require('routes/invoices/edit')],
   ['*', () => '/dashboard']
 ]);
 

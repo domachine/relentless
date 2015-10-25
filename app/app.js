@@ -1,50 +1,57 @@
 import {EventEmitter} from 'events';
 import _ from 'highland';
-import Router from 'routes';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
 import reduce from './reducers';
 import db from './db';
 import design from './design';
-
-var router = Router();
-router.addRoute('/dashboard', require('routes/dashboard/show'));
-router.addRoute('/invoices', require('routes/invoices/index'));
-router.addRoute('/invoices/new', require('routes/invoices/new'));
-router.addRoute('*', () => '/dashboard');
+import {stream as locationStream, Router} from './lib/routing';
+import Event from './lib/event';
 
 var store = new EventEmitter();
-var actionStream = _('action', store);
-var locationStream = _(push => {
-  var trigger = window.onhashchange = () => push(null, window.location.hash);
-  trigger();
-}).map(hash => (hash || '#').slice(1));
+var actionStream = _(push =>
+  store.on('action', a => {
+    push(null, new Event('ACTION', a));
+  })
+);
+
+var router = Router({
+  '/invoices': require('routes/invoices/index'),
+  '/invoices/new': require('routes/invoices/new'),
+  '*': () => '/dashboard'
+});
+
+var middleware = () => _(db.info())
 
 var stateStream = _.merge([actionStream, locationStream])
-  .map(a =>
-    typeof a === 'string'
-      ? _([{_view: null, _url: null}])
-          .concat(
-            _.merge([
-              _(db.info()),
-              _([router.match(a)])
-                .map(m => m.fn(m.params))
-                .flatMap(r => _.isStream(r) ? r : _([r]))
-            ])
-          )
-          .map(a =>
+  .flatMap(e => e.type === 'LOCATION_CHANGE'
+    ? _([{_view: null}])
+        .concat(
+          _.merge([middleware(), router(e.payload)])
+        )
+
+        // Transform each routing result into an action
+        .map(a =>
+          new Event('ACTION',
             a.type === undefined && typeof a !== 'string'
-              ? {data: a}
+              ? {type: '@', data: a}
               : a
           )
-      : a
+        )
+    : _([e])
   )
-  .flatMap(a => _.isStream(a) ? a : _([a]))
-  .map(a => typeof a === 'string' ? {data: {_url: a}} : a)
-  .doto(a => console.log('action', a.data))
+
+  // Flatten all actions
+  .flatMap(e => e.type === 'ACTION' && _.isStream(e.payload)
+    ? e.payload
+    : _([e])
+  )
+  .doto(e => console.log('event', e))
+  .map(e => e.payload)
+  .map(a => typeof a === 'string' ? {type: '@', data: {_url: a}} : a)
   .scan({}, (state, action) =>
-    action.type === undefined
+    action.type === '@'
       ? {... state, ... action.data}
       : reduce(state, action)
   );
@@ -78,6 +85,7 @@ _(db.get('_design/relentless'))
       }
     });
   });
+
 var stringifyDesign = design =>
 
   // Little hack to conveniently convert the design doc to JSON.

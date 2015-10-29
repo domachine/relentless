@@ -1,4 +1,6 @@
 import {EventEmitter} from 'events';
+import url from 'url';
+import ever from 'ever';
 import _ from 'highland';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -6,54 +8,47 @@ import ReactDOM from 'react-dom';
 import reduce from './reducers';
 import db from './db';
 import design from './design';
-import {stream as locationStream, Router} from './lib/routing';
-import Event from './lib/event';
+import routes from './routes';
 
 var store = new EventEmitter();
-var actionStream = _(push =>
-  store.on('action', a => {
-    push(null, new Event('ACTION', a));
-  })
+var actionEmitter = new EventEmitter();
+var actions = _('action', actionEmitter);
+var locations = _.concat(
+  _('hashchange', ever(window)),
+  [{newURL: window.location.toString()}]
+);
+var router = _.pipeline(
+  _.map(e => (url.parse(e.newURL).hash || '#').slice(1)),
+  _.map(u => routes.match(u)),
+  _.map(m => m.fn(m.params))
 );
 
-var router = Router([
-  ['/dashboard', require('routes/dashboard/show')],
-  ['/invoices', require('routes/invoices/index')],
-  ['/invoices/new', require('routes/invoices/new')],
-  ['/invoices/:id/edit', require('routes/invoices/edit')],
-  ['*', () => '/dashboard']
-]);
+var appStream = _([
+  actions,
+  locations
+    .pipe(router)
+    .flatMap(m =>
+      _([{
+        _location: window.location.hash,
+        _view: null,
+        alert: null,
+        notice: null
+      }]).concat([m])
+    )
+]).merge();
 
-var middleware = () => _(db.info())
-
-var stateStream = _.merge([actionStream, locationStream])
-  .flatMap(e => e.type === 'LOCATION_CHANGE'
-    ? _([{_view: null, _url: null}])
-        .concat(
-          _.merge([middleware(), router(e.payload)])
-        )
-
-        // Transform each routing result into an action
-        .map(a =>
-          new Event('ACTION',
-            a.type === undefined && typeof a !== 'string'
-              ? {type: '@', data: a}
-              : a
-          )
-        )
-    : _([e])
+var stateStream = appStream
+  .flatMap(a => _.isStream(a) ? a : _([a]))
+  .map(a =>
+    typeof a === 'string'
+      ? ({type: '@', data: {_location: a}})
+      : a.type === undefined ? ({type: '@', data: a}) : a
   )
-
-  // Flatten all actions
-  .flatMap(e => e.type === 'ACTION' && _.isStream(e.payload)
-    ? e.payload
-    : _([e.payload])
-  )
-  .map(a => typeof a === 'string' ? {type: '@', data: {_url: a}} : a)
+  .doto(console.log.bind(console))
   .scan({}, (state, action) =>
     action.type === '@'
-      ? {... state, ... action.data}
-      : reduce(state, action)
+      ? {... state, ... reduce(state, action), ... action.data}
+      : {... state, ... reduce(state, action)}
   );
 
 /**
@@ -72,16 +67,18 @@ _(db.get('_design/relentless'))
   )
   .apply(() => {
     stateStream.each(state => {
-      var props = {
+      let props = {
         ... state,
-        dispatch: store.emit.bind(store, 'action')
+        dispatch: actionEmitter.emit.bind(actionEmitter, 'action')
       };
-
-      window.STATE = state;
-      if (typeof state._url === 'string') {
-        window.location.hash = state._url;
-      } else if (state._view != null) {
-        ReactDOM.render(<state._view {... props}/>, document.querySelector('#app'));
+      if (state._location != null) {
+        window.location.hash = state._location;
+      }
+      if (state._view != null) {
+        ReactDOM.render(
+          <state._view {... props}/>,
+          document.querySelector('#app')
+        );
       }
     });
   });

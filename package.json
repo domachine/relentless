@@ -17,6 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "babelify": "^6.3.0",
+    "ever": "0.0.3",
     "highland": "^2.5.1",
     "merge": "^1.2.0",
     "parcelify": "^2.1.0",
